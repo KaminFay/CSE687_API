@@ -18,7 +18,7 @@ func requestHandler() {
 }
 
 func main() {
-	fmt.Print("Operating System we are running on:  )
+	fmt.Print("Operating System we are running on: ")
 	fmt.Println(runtime.GOOS)
 	requestHandler()
 }
