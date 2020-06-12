@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"runtime"
+	"github.com/gorilla/mux"
 )
 
 func homePage(w http.ResponseWriter, r *http.Request){
@@ -13,8 +14,9 @@ func homePage(w http.ResponseWriter, r *http.Request){
 }
 
 func requestHandler() {
-	http.HandleFunc("/", homePage)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	router := mux.NewRouter()
+	router.HandleFunc("/", homePage).Methods("GET")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 func main() {
