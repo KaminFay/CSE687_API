@@ -1,0 +1,20 @@
+CREATE TABLE test_functions (
+    id SERIAL PRIMARY KEY,
+    function_name VARCHAR(100) NOT NULL,
+    dll_name VARCHAR(100),
+    dll_path VARCHAR(100) NOT NULL
+);
+
+INSERT INTO test_functions(function_name, dll_name, dll_path)
+VALUES ('Test Function', 'test.dll', 'test_path/');
+
+CREATE TABLE finished_tests (
+    id integer PRIMARY KEY NOT NULL,
+    function_name VARCHAR(100) NOT NULL,
+    dll_name VARCHAR(100),
+    dll_path VARCHAR(100) NOT NULL,
+    bool_result boolean NOT NULL,
+    exception VARCHAR(255) NOT NULL,
+    start_time VARCHAR(100) NOT NULL,
+    end_time VARCHAR(100) NOT NULL
+);
