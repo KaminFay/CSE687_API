@@ -1,41 +1,16 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"runtime"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
-
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "classPassword"
-	dbname   = "cse687_db"
-)
-
-func establishDBConnection() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Connected all right!")
-}
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Welcome to the HomePage!")
@@ -45,15 +20,34 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 func requestHandler() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", homePage).Methods("GET")
-	router.HandleFunc("/cse687/sendFunctions", sendTestFunctions)
-	router.HandleFunc("/cse687/recieveFunctions", recieveTestFunction)
+	router.HandleFunc("/cse687/sendFunctions", sendTestFunction)
+	router.HandleFunc("/cse687/recieveFunctions", recieveTestFunction).Methods("GET")
+	router.HandleFunc("/cse687/sendResults", sendResults).Methods()
 	router.HandleFunc("/cse687/results", recieveResults).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 func main() {
+
+	// Setup for running this in the background
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs)
+	go func() {
+		s := <-sigs
+		log.Printf("RECEIVED SIGNAL: %s", s)
+		serverShutdown()
+		os.Exit(1)
+	}()
+
+	// Checking to make sure we are on linux
 	fmt.Print("Operating System we are running on: ")
 	fmt.Println(runtime.GOOS)
+
 	establishDBConnection()
 	requestHandler()
+}
+
+func serverShutdown() {
+	log.Println("Need to clean up server.")
+	DB.Close()
 }
