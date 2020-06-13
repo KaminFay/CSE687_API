@@ -12,11 +12,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
+/*
+*	Unneccessary endpoint
+ */
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Welcome to the HomePage!")
 	fmt.Println("Endpoing Hit: Homepage")
 }
 
+/*
+* Sets up the routs / endpoints that we can connect to
+* Spins up the listener / server on port 8080
+ */
 func requestHandler() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", homePage).Methods("GET")
@@ -47,6 +54,11 @@ func main() {
 	requestHandler()
 }
 
+/*
+*	If A signal is recieved to terminate *example a Ctrl-C*
+*	or if the program crashes, this function is called to close
+*	the DB connection.
+ */
 func serverShutdown() {
 	log.Println("Need to clean up server.")
 	DB.Close()

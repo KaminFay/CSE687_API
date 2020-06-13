@@ -16,6 +16,10 @@ const (
 // DB is really dangerous, should not have global db connection but we're playing quick here
 var DB *sql.DB
 
+/*
+* Connect to the Postgres database located on the machine
+* Closure is done in the closeDatabaseConnection() function.
+ */
 func establishDBConnection() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -34,6 +38,12 @@ func establishDBConnection() {
 	DB = db
 }
 
+/*
+* Insert Testable Functions into the datbase one at a time
+*
+* Input -- Testable Function object that contains Function data *Broken Up and passed as individual*
+* Output -- None
+ */
 func insertTestFunction(functionName string, dllName string, dllPath string) int {
 	sqlStatment := `INSERT INTO test_functions (function_name, dll_name, dll_path)
 					VALUES ($1, $2, $3) RETURNING id`
@@ -47,6 +57,12 @@ func insertTestFunction(functionName string, dllName string, dllPath string) int
 	return id
 }
 
+/*
+* Insert Function Results into the datbase one at a time
+*
+* Input -- Function Result object that contains result data <-- fr functionResult -->
+* Output -- None
+ */
 func insertFunctionResult(fr functionResult) {
 	sqlStatment := `INSERT INTO finished_tests (id, function_name, dll_name, dll_path,
 					bool_result, exception, start_time, end_time)
@@ -59,6 +75,12 @@ func insertFunctionResult(fr functionResult) {
 	}
 }
 
+/*
+* Get all of the functions within the test_functions table
+*
+* Input -- None
+* Output -- List of functions to Test <-- listOfFunctions []functionToTest -->
+ */
 func getAllTestFunctions() []functionToTest {
 
 	var listOfFunctions []functionToTest
@@ -88,6 +110,12 @@ func getAllTestFunctions() []functionToTest {
 	return listOfFunctions
 }
 
+/*
+* Get a slice of function results based on inputed function ID's
+*
+* Input -- List of function ID's <-- idList []resultID -->
+* Output -- List of function results <-- listOfResults []functionResult -->
+ */
 func getResults(idList []resultID) []functionResult {
 
 	var listOfResults []functionResult
@@ -110,6 +138,11 @@ func getResults(idList []resultID) []functionResult {
 	return listOfResults
 }
 
+/*
+* Once All of the items have been removed for testing we can
+* call this function to remove the contents of the test_functions
+* table.
+ */
 func truncateTestFunctionTable() {
 	sqlStatment := `TRUNCATE test_functions`
 
@@ -119,6 +152,9 @@ func truncateTestFunctionTable() {
 	}
 }
 
+/*
+* Once the connection is no longer needed we can close the database connection
+ */
 func closeDatabaseConnection() {
 	DB.Close()
 }

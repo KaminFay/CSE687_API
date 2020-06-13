@@ -8,6 +8,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
+/*
+*	Endpoint for uploading the testable functions from the GUI.
+*	This is called from the C# side in the GUI to be added to the database.
+ */
 func sendTestFunction(w http.ResponseWriter, r *http.Request) {
 	var tf functionToTest
 	fmt.Fprintln(w, "Sending Test Function")
@@ -23,6 +27,11 @@ func sendTestFunction(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "We inserted a function with id %d", id)
 }
 
+/*
+*	Endpoint for returning the functions that need testing.
+* 	Also calls to truncate the table once we have pulled the data.
+*	This is called from the C++ side to be remove from the database.
+ */
 func recieveTestFunction(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Recieving Test Function")
 
@@ -33,6 +42,10 @@ func recieveTestFunction(w http.ResponseWriter, r *http.Request) {
 
 }
 
+/*
+*	Endpoint for uploading the results of tests.
+*	This is called from the C++ side to be added to the database.
+ */
 func sendResults(w http.ResponseWriter, r *http.Request) {
 	var frList []functionResult
 	fmt.Fprintln(w, "Sending Test Function")
@@ -49,6 +62,10 @@ func sendResults(w http.ResponseWriter, r *http.Request) {
 
 }
 
+/*
+*	Endpoint for returning the results from the database.
+*	This is called from the C# side to display in GUI.
+ */
 func recieveResults(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Recieving Result")
 	var idList []resultID
