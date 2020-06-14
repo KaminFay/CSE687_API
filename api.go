@@ -14,8 +14,6 @@ import (
  */
 func sendTestFunction(w http.ResponseWriter, r *http.Request) {
 	var tf functionToTest
-	fmt.Fprintln(w, "Sending Test Function")
-
 	err := json.NewDecoder(r.Body).Decode(&tf)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -24,7 +22,7 @@ func sendTestFunction(w http.ResponseWriter, r *http.Request) {
 
 	id := insertTestFunction(tf.FunctionName, tf.DllName, tf.DllPath)
 
-	fmt.Fprintf(w, "We inserted a function with id %d", id)
+	fmt.Fprintf(w, "%d", id)
 }
 
 /*
@@ -33,8 +31,6 @@ func sendTestFunction(w http.ResponseWriter, r *http.Request) {
 *	This is called from the C++ side to be remove from the database.
  */
 func recieveTestFunction(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Recieving Test Function")
-
 	listOfFunctions := getAllTestFunctions()
 	json.NewEncoder(w).Encode(listOfFunctions)
 
@@ -47,18 +43,14 @@ func recieveTestFunction(w http.ResponseWriter, r *http.Request) {
 *	This is called from the C++ side to be added to the database.
  */
 func sendResults(w http.ResponseWriter, r *http.Request) {
-	var frList []functionResult
-	fmt.Fprintln(w, "Sending Test Function")
-
-	err := json.NewDecoder(r.Body).Decode(&frList)
+	fmt.Println("Endpoing Hit: sendResult")
+	var fr functionResult
+	err := json.NewDecoder(r.Body).Decode(&fr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	for _, fr := range frList {
-		insertFunctionResult(fr)
-	}
+	insertFunctionResult(fr)
 
 }
 
@@ -67,8 +59,7 @@ func sendResults(w http.ResponseWriter, r *http.Request) {
 *	This is called from the C# side to display in GUI.
  */
 func recieveResults(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Recieving Result")
-	var idList []resultID
+	var idList resultID
 	err := json.NewDecoder(r.Body).Decode(&idList)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -76,5 +67,9 @@ func recieveResults(w http.ResponseWriter, r *http.Request) {
 	}
 
 	listOfResults := getResults(idList)
-	json.NewEncoder(w).Encode(listOfResults)
+	if listOfResults == (functionResult{}) {
+		fmt.Fprintf(w, "nil")
+	} else {
+		json.NewEncoder(w).Encode(listOfResults)
+	}
 }

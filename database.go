@@ -116,26 +116,21 @@ func getAllTestFunctions() []functionToTest {
 * Input -- List of function ID's <-- idList []resultID -->
 * Output -- List of function results <-- listOfResults []functionResult -->
  */
-func getResults(idList []resultID) []functionResult {
+func getResults(idList resultID) functionResult {
 
-	var listOfResults []functionResult
 	sqlStatment := `SELECT id, function_name, dll_name, dll_path, bool_result,
 	exception, start_time, end_time FROM finished_tests WHERE id = $1`
 
-	for _, result := range idList {
-		var funcResult functionResult
+	var funcResult functionResult
 
-		err := DB.QueryRow(sqlStatment, result.ID).Scan(&funcResult.ID, &funcResult.FunctionName,
-			&funcResult.DllName, &funcResult.DllPath, &funcResult.Result, &funcResult.Exception,
-			&funcResult.StartTime, &funcResult.EndTime)
-		if err != nil {
-			panic(err)
-		}
-
-		listOfResults = append(listOfResults, funcResult)
+	err := DB.QueryRow(sqlStatment, idList.ID).Scan(&funcResult.ID, &funcResult.FunctionName,
+		&funcResult.DllName, &funcResult.DllPath, &funcResult.Result, &funcResult.Exception,
+		&funcResult.StartTime, &funcResult.EndTime)
+	if err != nil {
+		// panic(err)
 	}
 
-	return listOfResults
+	return funcResult
 }
 
 /*

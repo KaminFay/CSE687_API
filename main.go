@@ -26,12 +26,12 @@ func homePage(w http.ResponseWriter, r *http.Request) {
  */
 func requestHandler() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", homePage).Methods("GET")
+	router.HandleFunc("/", homePage)
 	router.HandleFunc("/cse687/sendFunctions", sendTestFunction)
 	router.HandleFunc("/cse687/recieveFunctions", recieveTestFunction).Methods("GET")
-	router.HandleFunc("/cse687/sendResults", sendResults).Methods()
-	router.HandleFunc("/cse687/results", recieveResults).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	router.HandleFunc("/cse687/sendResults", sendResults).Methods("POST")
+	router.HandleFunc("/cse687/results", recieveResults).Methods("POST")
+	log.Fatal(http.ListenAndServe(":80", router))
 }
 
 func main() {
